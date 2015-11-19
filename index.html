@@ -2,12 +2,14 @@
 <html manifest="groenteman.appcache">
 	<head>
 		<title>Mijn Groenteman</title>
+        <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+		<script type="text/javascript" src="js/main.js"></script>
 	</head>
 	<body>
 		<header class='mainHeader'>
 			<h1 class='mainTitle'>Mijn Groenteman</h1>
-			<a href='lists.html'><button class='button'>Log in</button></a>
-			<a href='lists.html'><button class='button blue'>Join now!</button></a>
+			<button class='button' id="btnLogin">Log in</button>
+			<a href='lists.html'><button class='button blue' id="btnJoin">Join now!</button></a>
 		</header>
 		<div class='content'>
 			<h2 class='quote'>Inspirational quote</h2>

@@ -2,55 +2,85 @@
 <html>
 	<head>
 		<title>Your lists! - MijnGroenteman</title>
+        <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="js/lists.js"></script>
 	</head>
 	<body>
 		<header>
 			<h1>Your todo lists</h1>
-			<a href='index.html'><button class='button red'>Logout</button></a>
+			<a href="index.html"><button class="button red" id="logoutBtn">Logout</button></a>
 		</header>
-		<div class='contentLists'>
-			<div class='settingsBar'>
+		<div class="contentLists">
+			<div class="settingsBar">
 				Main settings and lbadklfjasf
 			</div>
-			<div class='listsTab'>
-				<div class='addList'>
+			<div class="popupBg" style="display: none;">
+                <div class="popupContent" id="addListPopup" style="display: none;">
+                    <form id="addListForm">
+                        <span>Please give the name for the new list:</span>
+                        <input type="text" placeholder="Name" id="addListName" />
+                        <button class="button green" id="addListBtn">Add List</button>
+                        <button class="button red" id="cancelAddListBtn">Cancel</button>
+                    </form>
+                </div>
+            </div>
+			<div class="listsTab">
+				<div class="addList" id="addList">
 					<span>Add list</span>
 					<button>+</button>
 				</div>
-				<ul class='lists'>
-					<li class='listName'>Groceries</li>
-					<li class='listName'>Kappa</li>
-					<li class='listName'>And his name is</li>
-					<li class='listName'>John Cena!!!!</li>
-					<li class='listName'>Dank Maymays</li>
+				<ul class="lists" id="lists">
+					<li class="listName deleteListBtn">
+                        <button class="button red">X</button>
+                        <span>Groceries</span>
+                    </li>
+                    <li class="listName deleteListBtn">
+                        <button class="button red">X</button>
+                        <span>Kappa</span>
+                    </li>
+                    <li class="listName deleteListBtn">
+                        <button class="button red">X</button>
+                        <span>And his name is</span>
+                    </li>
+                    <li class="listName deleteListBtn">
+                        <button class="button red">X</button>
+                        <span>John Cena!!!!</span>
+                    </li>
+                    <li class="listName deleteListBtn">
+                        <button class="button red">X</button>
+                        <span>Dank Maymays</span>
+                    </li>
 				</ul>
-				<div class='list'>
-					<div class='listHeader'>
+				<div class="list">
+					<div class="listHeader">
 						<h2>Dank Maymays</h2>
 						<button>+</button>
 					</div>
-					<ul class='listEntries'>
-						<li>
-							<button class='btnDelete'>Delete</button>
-							<input type='text' value="Lorum ipsum dolor sit amet" />
+                    <ul class="listEntries">
+
+                    </ul>
+					<!--<ul class="listEntries">
+						<li class="todo note">
+							<button class="btnDelete">Delete</button>
+							<input type="text" value="Lorum ipsum dolor sit amet" />
 						</li>
-						<li>
-							<button class='btnDelete'>Delete</button>
-							<input type='text' value="Lorum ipsum 09" />
+						<li class="todo important">
+							<button class="btnDelete">Delete</button>
+							<input type="text" value="Lorum ipsum 09" />
 						</li>
-						<li>
-							<button class='btnDelete'>Delete</button>
-							<input type='text' value="Lorum ipsum dolor sit" />
+						<li class="todo deadline">
+							<button class="btnDelete">Delete</button>
+							<input type="text" value="Lorum ipsum dolor sit" />
 						</li>
-						<li>
-							<button class='btnDelete'>Delete</button>
-							<input type='text' value="Lorum ipsum dolor blargh sldkfj sd oio" />
+						<li class="todo note">
+							<button class="btnDelete">Delete</button>
+							<input type="text" value="Lorum ipsum dolor blargh sldkfj sd oio" />
 						</li>
-						<li>
-							<button class='btnDelete'>Delete</button>
-							<input type='text' value="ajksdhf sodfij sd 2093 jsdf09 sdf" />
+						<li class="todo note">
+							<button class="btnDelete">Delete</button>
+							<input type="text" value="ajksdhf sodfij sd 2093 jsdf09 sdf" />
 						</li>
-					</ul>
+					</ul>-->
 				</div>
 			</div>
 		</div>

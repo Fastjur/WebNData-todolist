@@ -21,6 +21,10 @@ window.addEventListener("load", function() {
         $(".popupBg").hide();
         $(".popupContent").hide();
     });
+    document.getElementById("addTodoBtn").addEventListener("click", function(event) {
+        event.preventDefault();
+        window.todoarray.add("","note",true);
+    });
     addDeleteEvents();
     getTodoItems();
 });
@@ -91,12 +95,22 @@ function todoArray () {
 }
 
 todoArray.prototype = {
-    add: function(text, type) {
+    add: function(text, type, draw) {
         var todo = new Todo(this.array.length, text, type);
-        this.array.add(todo);
+        this.array.push(todo);
+        if(draw) {
+            window.todoarray.draw();
+        }
     },
-    delete: function(id) {
-        this.array.splice(id, 1);
+    delete: function(id, draw) {
+        for(var i=0; i<this.array.length; i++) {
+            if(this.array[i].id == id) {
+                this.array.splice(i, 1);
+            }
+        }
+        if(draw) {
+            window.todoarray.draw();
+        }
     },
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0];
@@ -112,20 +126,24 @@ todoArray.prototype = {
             var btn = document.createElement("button"),
                 btnText = document.createTextNode("Delete");
             btn.addEventListener("click", function () {
-                id = this.array[i].id;
-                todoArray.delete(id);
+                id = this.parentElement.dataset.id;
+                window.todoarray.delete(id, true);
             });
             btn.className = "btnDelete";
             btn.appendChild(btnText);
             li.appendChild(btn);
 
             var input = document.createElement("input"),
-                inputText = todoArray[i].text;
+                inputText = this.array[i].text;
             input.type = "text";
             input.value = inputText;
             li.appendChild(input);
 
             listEntries.appendChild(li);
+        }
+
+        if(this.array.length == 0) {
+            listEntries.innerHTML = "<span class=\"error\">No data found in array!</span>";
         }
     }
 }
@@ -134,9 +152,11 @@ todoArray.prototype = {
 function getTodoItems() {
     //TODO, database connection to get actual items
     window.todoarray = new todoArray();
-    window.todoarray.add("Note 1", "note");
-    window.todoarray.add("Important 2", "important");
-    window.todoarray.add("Deadline 3", "deadline");
+    window.todoarray.add("Note 1", "note", false);
+    window.todoarray.add("Important 2", "important", false);
+    window.todoarray.add("Deadline 3", "deadline", false);
+
+    window.todoarray.draw();
 
     var listEntries = document.getElementsByClassName("listEntries")[0];
 

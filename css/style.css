@@ -1,28 +1,47 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto+Slab);
+@import url(fonts.css);
 * {
     margin: 0;
     padding: 0;
 }
+body {
+    background: #fafafa;
+}
 .mainHeader {
-    height: 130px;
+    height: 80px;
     text-align: center;
-    line-height: 130px;
-    font-size: 40px;
+    line-height: 80px;
+    font-size: 32px;
     box-shadow: 3px 0 10px rgba(0,0,0,0.5);
-    margin-bottom: 50px;
     font-family: "Roboto Slab", sans-serif;
+    margin-bottom: 3px;
+}
+.imgContent {
+    width: 100%;
+    height: 500px;
+    background-image: url("../img/business-people-working.jpg");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position-y: 50%;
 }
 .quote {
-    font-family: "Robobo Slab", sans-serif;
-    font-size: 35px;
-    text-align: center;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 45px;
+    background-color: rgba(195,195,195,0.5);
+    width: 550px;
+    height: auto;
+    border-radius: 5px;
+    padding: 25px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
 }
 .mainHeaderBtns{
-    position: fixed;
-    right: 0px;
+    position: absolute;
+    right: 30px;
     top: 0px;
-    height: 130px;
-    line-height: 130px;
+    height: 80px;
+    line-height: 80px;
 }
 .button {
     width: 8em;
@@ -39,5 +58,30 @@
     border: 1px solid rgba(0,0,0,0.3);
 }
 .button.blue {
-    background-color: #113399;
+    background-color: #15B7ED;
+}
+.button.blue:hover {
+    box-shadow: 3px 3px 3px rgba(0,0,0,0.5);
+}
+.features {
+    width: 1024px;
+    margin: 50px auto 0 auto;
+}
+.featureItem {
+    width: 300px;
+    height: 200px;
+    margin: 20px;
+    border-radius: 5px;
+    display: block;
+    float: left;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+.featureItem > p {
+    width: 100%;
+    border-radius: 5px 5px 0 0;
+    font-size: 25px;
+    font-family: "Roboto Condensed", sans-serif;
+    font-weight: 700;
+    background-color: #43ff72;
+    text-align: center;
 }

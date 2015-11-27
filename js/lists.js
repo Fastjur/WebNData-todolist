@@ -25,6 +25,21 @@ window.addEventListener("load", function() {
         event.preventDefault();
         window.todos.add("","note");
     });
+    document.getElementById("sort_todos").addEventListener("click", function() {
+        var sortBy = document.getElementById("sort_type").value,
+            sortOrder = document.getElementById("sort_order").value;
+        console.log(sortBy, sortOrder);
+        if (sortBy == "Priority") {
+            window.todos.array.sort(function(a, b) {
+                if (sortOrder == "Descending") {
+                    return b.priority - a.priority;
+                } else if (sortOrder == "Ascending") {
+                    return a.priority - b.priority;
+                }
+            });
+        }
+        window.todos.draw();
+    });
     window.initialDraw = false;//Prevents the list from being redrawn for every item it gets initially
     getTodoItems();
     window.initialDraw = true;
@@ -35,6 +50,10 @@ var updateTodo = function () {
     var text = this.value,
         id = this.parentElement.dataset.id;
     window.todos.editTodo(id, text);
+};
+
+var updateTodoPriority = function () {
+
 };
 
 var deleteList = function (event) {
@@ -86,14 +105,14 @@ function addList(event) {
 
 }
 
-function Todo (text, type) {
+function Todo (text, priority) {
     this.text = text;
-    this.type = type;
+    this.priority = priority;
 }
 
 Todo.prototype = {
     toString: function() {
-        return "Todo: " + this.text + ", type: " + this.type;
+        return "Todo: " + this.text + ", priority: " + this.priority;
     }
 };
 
@@ -102,8 +121,8 @@ function todoArray () {
 }
 
 todoArray.prototype = {
-    add: function(text, type) {
-        var todo = new Todo(text, type);
+    add: function(text, priority) {
+        var todo = new Todo(text, priority);
         this.array.push(todo);
         if(window.initialDraw) {
             window.todos.draw();
@@ -113,28 +132,22 @@ todoArray.prototype = {
         this.array.splice(id, 1);
         window.todos.draw();
     },
-    editTodo: function(id, text, type) {
+    editTodo: function(id, text, priority) {
         this.array[id].text = text;
-        if(type != null) {
-            this.array[id].type = type;
-        }
-        console.clear();
-        for (var i=0; i<this.array.length; i++) {//TODO remove debugging in console
-            console.log(this.array[i]);
+        if(priority != null) {
+            this.array[id].priority = priority;
         }
     },
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0];
         listEntries.innerHTML = "";
-        console.clear();
         for(var i=0; i<this.array.length; i++) {
-            console.log(this.array[i]);
             var li = document.createElement("li"),
-                type = this.array[i].type;
-            li.className = "todo " + type;
+                priority = this.array[i].priority;
+            li.className = "todo " + priority;
             li.deleted = false;
             li.dataset.id = i;
-            li.dataset.type = this.array[i].type;
+            li.dataset.priority = this.array[i].priority;
 
             var btn = document.createElement("button"),
                 btnText = document.createTextNode("Delete");
@@ -143,8 +156,42 @@ todoArray.prototype = {
                 window.todos.delete(id);
             });
             btn.className = "btnDelete";
+
+            var priority = document.createElement("select"),
+                note = document.createElement("option"),
+                deadline = document.createElement("option"),
+                medium = document.createElement("option"),
+                important = document.createElement("option"),
+                noteText = document.createTextNode("Note"),
+                deadlineText = document.createTextNode("Deadline"),
+                mediumText = document.createTextNode("Medium"),
+                importantText = document.createTextNode("Important");
+            note.value = 0;
+            deadline.value = 1;
+            medium.value = 2;
+            important.value = 3;
+            note.appendChild(noteText);
+            deadline.appendChild(deadlineText);
+            medium.appendChild(mediumText);
+            important.appendChild(importantText);
+
+            if(this.array[i].priority == 1) {
+                deadline.selected = true;
+            } else if(this.array[i].priority == 2) {
+                medium.selected = true;
+            } else if (this.array[i].priority == 3) {
+                important.selected = true;
+            }
+
+            priority.appendChild(note);
+            priority.appendChild(deadline);
+            priority.appendChild(medium);
+            priority.appendChild(important);
+
             btn.appendChild(btnText);
             li.appendChild(btn);
+            li.appendChild(priority);
+
 
             var input = document.createElement("input"),
                 inputText = this.array[i].text;
@@ -161,44 +208,16 @@ todoArray.prototype = {
             listEntries.innerHTML = "<span class=\"error\">No data found in array!</span>";
         }
     }
-}
+};
 
 
 function getTodoItems() {
     //TODO, database connection to get actual items
     window.todos = new todoArray();
-    window.todos.add("One", "note");
-    window.todos.add("Two", "important");
-    window.todos.add("Three", "deadline");
+    window.todos.add("Note thing", 0);
+    window.todos.add("Deadline thing", 1);
+    window.todos.add("Medium thing", 2);
+    window.todos.add("Important thing", 3);
 
     window.todos.draw();
-
-    /*var listEntries = document.getElementsByClassName("listEntries")[0];
-
-    for(var i=0; i<todoArray.length; i++) {
-        var li = document.createElement("li"),
-            type = todoArray[i].type;
-        li.className = "todo " + type;
-        li.deleted = false;
-        li.dataset.id = todoArray
-
-        var btn = document.createElement("button"),
-            btnText = document.createTextNode("Delete");
-        btn.addEventListener("click", function () {
-            id = 1;
-            var todo = window.todoArray[id];
-            todo.delete();
-        });
-        btn.className = "btnDelete";
-        btn.appendChild(btnText);
-        li.appendChild(btn);
-
-        var input = document.createElement("input"),
-            inputText = todoArray[i].text;
-        input.type = "text";
-        input.value = inputText;
-        li.appendChild(input);
-
-        listEntries.appendChild(li);
-    }*/
 }

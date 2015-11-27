@@ -23,7 +23,7 @@ window.addEventListener("load", function() {
     });
     document.getElementById("addTodoBtn").addEventListener("click", function(event) {
         event.preventDefault();
-        window.todos.add("","note");
+        window.todos.add("",0);
     });
     document.getElementById("sort_todos").addEventListener("click", function() {
         var sortBy = document.getElementById("sort_type").value,

@@ -23,11 +23,19 @@ window.addEventListener("load", function() {
     });
     document.getElementById("addTodoBtn").addEventListener("click", function(event) {
         event.preventDefault();
-        window.todoarray.add("","note",true);
+        window.todos.add("","note");
     });
-    addDeleteEvents();
+    window.initialDraw = false;//Prevents the list from being redrawn for every item it gets initially
     getTodoItems();
+    window.initialDraw = true;
+    addDeleteEvents();
 });
+
+var updateTodo = function () {
+    var text = this.value,
+        id = this.parentElement.dataset.id;
+    window.todos.editTodo(id, text);
+};
 
 var deleteList = function (event) {
     event.preventDefault();
@@ -78,8 +86,7 @@ function addList(event) {
 
 }
 
-function Todo (id, text, type) {
-    this.id = id;
+function Todo (text, type) {
     this.text = text;
     this.type = type;
 }
@@ -95,39 +102,45 @@ function todoArray () {
 }
 
 todoArray.prototype = {
-    add: function(text, type, draw) {
-        var todo = new Todo(this.array.length, text, type);
+    add: function(text, type) {
+        var todo = new Todo(text, type);
         this.array.push(todo);
-        if(draw) {
-            window.todoarray.draw();
+        if(window.initialDraw) {
+            window.todos.draw();
         }
     },
-    delete: function(id, draw) {
-        for(var i=0; i<this.array.length; i++) {
-            if(this.array[i].id == id) {
-                this.array.splice(i, 1);
-            }
+    delete: function(id) {
+        this.array.splice(id, 1);
+        window.todos.draw();
+    },
+    editTodo: function(id, text, type) {
+        this.array[id].text = text;
+        if(type != null) {
+            this.array[id].type = type;
         }
-        if(draw) {
-            window.todoarray.draw();
+        console.clear();
+        for (var i=0; i<this.array.length; i++) {//TODO remove debugging in console
+            console.log(this.array[i]);
         }
     },
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0];
         listEntries.innerHTML = "";
-
+        console.clear();
         for(var i=0; i<this.array.length; i++) {
+            console.log(this.array[i]);
             var li = document.createElement("li"),
                 type = this.array[i].type;
             li.className = "todo " + type;
             li.deleted = false;
-            li.dataset.id = this.array[i].id;
+            li.dataset.id = i;
+            li.dataset.type = this.array[i].type;
 
             var btn = document.createElement("button"),
                 btnText = document.createTextNode("Delete");
             btn.addEventListener("click", function () {
                 id = this.parentElement.dataset.id;
-                window.todoarray.delete(id, true);
+                window.todos.delete(id);
             });
             btn.className = "btnDelete";
             btn.appendChild(btnText);
@@ -137,6 +150,8 @@ todoArray.prototype = {
                 inputText = this.array[i].text;
             input.type = "text";
             input.value = inputText;
+            input.className = "todoValue";
+            input.addEventListener("keyup", updateTodo, false);
             li.appendChild(input);
 
             listEntries.appendChild(li);
@@ -151,14 +166,14 @@ todoArray.prototype = {
 
 function getTodoItems() {
     //TODO, database connection to get actual items
-    window.todoarray = new todoArray();
-    window.todoarray.add("Note 1", "note", false);
-    window.todoarray.add("Important 2", "important", false);
-    window.todoarray.add("Deadline 3", "deadline", false);
+    window.todos = new todoArray();
+    window.todos.add("One", "note");
+    window.todos.add("Two", "important");
+    window.todos.add("Three", "deadline");
 
-    window.todoarray.draw();
+    window.todos.draw();
 
-    var listEntries = document.getElementsByClassName("listEntries")[0];
+    /*var listEntries = document.getElementsByClassName("listEntries")[0];
 
     for(var i=0; i<todoArray.length; i++) {
         var li = document.createElement("li"),
@@ -185,5 +200,5 @@ function getTodoItems() {
         li.appendChild(input);
 
         listEntries.appendChild(li);
-    }
+    }*/
 }

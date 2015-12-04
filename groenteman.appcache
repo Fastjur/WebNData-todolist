@@ -1,6 +1,11 @@
 CACHE MANIFEST
 index.html
 lists.html
-js/main.js
-lib/jquery-2.1.4.min.js
+css/fonts.css
 css/style.css
+css/login.css
+lib/jquery-2.1.4.min.js
+js/main.js
+js/login.js
+js/join.js
+js/lists.js

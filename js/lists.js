@@ -23,7 +23,7 @@ window.addEventListener("load", function() {
     });
     document.getElementById("addTodoBtn").addEventListener("click", function(event) {
         event.preventDefault();
-        window.todos.add("",0);
+        addTodo(0);
     });
     document.getElementById("sort_todos").addEventListener("click", function() {
         var sortBy = document.getElementById("sort_type").value,
@@ -52,9 +52,33 @@ var updateTodo = function () {
     window.todos.editTodo(id, text);
 };
 
-var updateTodoPriority = function () {
+function addTodo(id) {
+    //noinspection LoopStatementThatDoesntLoopJS
+    for(var i=0; i < window.todos.array.length; i++) {
+        if(id > 10) {
+            break; //todo: Remove me
+        }
+        var found = window.todos.array.some(function (el) {
+            return el.id === id;
+        });
+        if(!found) {
+            var todo = new Todo(id, "", 0);
+            window.todos.array.push(todo);
+            window.todos.draw();
+            break;
+        } else {
+            addTodo(id + 1);
+            break;
+        }
+    }
+}
 
-};
+function updateTodoPriority(me) {
+    window._TEMP = me;
+    var priority = me.options[me.selectedIndex].value,
+        todo = window.todos.array[me.parentElement.dataset.id];
+    console.log(todo);
+}
 
 var deleteList = function (event) {
     event.preventDefault();
@@ -105,48 +129,61 @@ function addList(event) {
 
 }
 
-function Todo (text, priority) {
+function Todo (id, text, priority) {
+    this.id = id;
     this.text = text;
     this.priority = priority;
 }
 
 Todo.prototype = {
     toString: function() {
-        return "Todo: " + this.text + ", priority: " + this.priority;
+        return "Todo: " + this.id + ", text: " + this.text + ", priority: " + this.priority;
     }
 };
 
-function todoArray () {
+function TodoArray () {
     this.array = [];
 }
 
-todoArray.prototype = {
-    add: function(text, priority) {
-        var todo = new Todo(text, priority);
+TodoArray.prototype = {
+    add: function(id, text, priority) {
+        var todo = new Todo(id, text, priority);
         this.array.push(todo);
         if(window.initialDraw) {
             window.todos.draw();
         }
     },
     delete: function(id) {
-        this.array.splice(id, 1);
+        console.log("Delete" + id);
+        for(var i=0; i < window.todos.array.length; i++) {
+            console.log(window.todos.array[i]);
+            if(window.todos.array[i].id == id) {
+                window.todos.array.splice(i, 1);
+            }
+        }
         window.todos.draw();
     },
     editTodo: function(id, text, priority) {
-        this.array[id].text = text;
-        if(priority != null) {
-            this.array[id].priority = priority;
+        console.log("Edit" + id);
+        for(var i=0; i < window.todos.array.length; i++) {
+            if(window.todos.array[i].id == id) {
+                window.todos.array[1].text = text;
+                if(priority !== undefined) {
+                    window.todos.array[i].priority = priority;
+                }
+            }
         }
+        console.log(window.todos.array);
     },
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0];
         listEntries.innerHTML = "";
         for(var i=0; i<this.array.length; i++) {
             var li = document.createElement("li"),
-                priority = this.array[i].priority;
-            li.className = "todo " + priority;
+                priorityItem = this.array[i].priority;
+            li.className = "todo priority_" + priorityItem;
             li.deleted = false;
-            li.dataset.id = i;
+            li.dataset.id = this.array[i].id;
             li.dataset.priority = this.array[i].priority;
 
             var btn = document.createElement("button"),
@@ -159,39 +196,40 @@ todoArray.prototype = {
 
             var priority = document.createElement("select"),
                 note = document.createElement("option"),
-                deadline = document.createElement("option"),
+                low = document.createElement("option"),
                 medium = document.createElement("option"),
-                important = document.createElement("option"),
+                high = document.createElement("option"),
                 noteText = document.createTextNode("Note"),
-                deadlineText = document.createTextNode("Deadline"),
+                lowText = document.createTextNode("Low"),
                 mediumText = document.createTextNode("Medium"),
-                importantText = document.createTextNode("Important");
+                highText = document.createTextNode("High");
             note.value = 0;
-            deadline.value = 1;
+            low.value = 1;
             medium.value = 2;
-            important.value = 3;
+            high.value = 3;
             note.appendChild(noteText);
-            deadline.appendChild(deadlineText);
+            low.appendChild(lowText);
             medium.appendChild(mediumText);
-            important.appendChild(importantText);
+            high.appendChild(highText);
 
             if(this.array[i].priority == 1) {
-                deadline.selected = true;
+                low.selected = true;
             } else if(this.array[i].priority == 2) {
                 medium.selected = true;
             } else if (this.array[i].priority == 3) {
-                important.selected = true;
+                high.selected = true;
             }
 
+            priority.addEventListener("change", function() {
+                updateTodoPriority(this);
+            });
+
             priority.appendChild(note);
-            priority.appendChild(deadline);
+            priority.appendChild(low);
             priority.appendChild(medium);
-            priority.appendChild(important);
+            priority.appendChild(high);
 
             btn.appendChild(btnText);
-            li.appendChild(btn);
-            li.appendChild(priority);
-
 
             var input = document.createElement("input"),
                 inputText = this.array[i].text;
@@ -199,7 +237,10 @@ todoArray.prototype = {
             input.value = inputText;
             input.className = "todoValue";
             input.addEventListener("keyup", updateTodo, false);
+
+            li.appendChild(btn);
             li.appendChild(input);
+            li.appendChild(priority);
 
             listEntries.appendChild(li);
         }
@@ -213,11 +254,11 @@ todoArray.prototype = {
 
 function getTodoItems() {
     //TODO, database connection to get actual items
-    window.todos = new todoArray();
-    window.todos.add("Note thing", 0);
-    window.todos.add("Deadline thing", 1);
-    window.todos.add("Medium thing", 2);
-    window.todos.add("Important thing", 3);
+    window.todos = new TodoArray();
+    window.todos.add(5, "Note thing", 0);
+    window.todos.add(6, "Low thing", 1);
+    window.todos.add(7, "Medium thing", 2);
+    window.todos.add(8, "High thing", 3);
 
     window.todos.draw();
 }

@@ -55,9 +55,6 @@ var updateTodo = function () {
 function addTodo(id) {
     //noinspection LoopStatementThatDoesntLoopJS
     for(var i=0; i < window.todos.array.length; i++) {
-        if(id > 10) {
-            break; //todo: Remove me
-        }
         var found = window.todos.array.some(function (el) {
             return el.id === id;
         });

@@ -8,7 +8,7 @@ window.addEventListener("load", function() {
         //TODO: destroy session and notify user of logout...
         window.location.href = "index.html";
     });
-    document.getElementById("addList").addEventListener("click", function(event) {
+    /*document.getElementById("addList").addEventListener("click", function(event) {
         showAddList(event);
     });
     document.getElementById("addListBtn").addEventListener("click", function(event) {
@@ -20,7 +20,7 @@ window.addEventListener("load", function() {
         document.getElementById("addListName").value = "";
         $(".popupBg").hide();
         $(".popupContent").hide();
-    });
+    });*/
     document.getElementById("addTodoBtn").addEventListener("click", function(event) {
         event.preventDefault();
         addTodo(0);
@@ -47,32 +47,53 @@ window.addEventListener("load", function() {
     addDeleteEvents();
 });
 
-var updateTodo = function () {
-    var text = this.value,
-        id = this.parentElement.dataset.id;
-    window.todos.editTodo(id, text);
-};
-
-function addTodo(id) {
-    //noinspection LoopStatementThatDoesntLoopJS
-    for(var i=0; i < window.todos.array.length; i++) {
-        var found = window.todos.array.some(function (el) {
-            return el.id === id;
-        });
-        if(!found) {
-            var todo = new Todo(id, "", 0);
-            window.todos.array.push(todo);
-            window.todos.draw();
-            break;
-        } else {
-            addTodo(id + 1);
+var updateTodo = function (me) {
+    var text = me.value,
+        id = me.parentElement.dataset.id;
+    for (var i=0; i<todos.array.length; i++) {
+        if(todos.array[i].id == id) {
+            window.todos.array[i].text = text;
             break;
         }
     }
+};
+
+var updateTodoTitle = function (me) {
+    var title = me.value,
+        id = me.parentElement.dataset.id;
+    for (var i=0; i<todos.array.length; i++) {
+        if(todos.array[i].id == id) {
+            window.todos.array[i].title = title;
+            break;
+        }
+    }
+};
+
+function addTodo() {
+    var now = Math.round(new Date().getTime()/1000);
+    $.ajax({
+        url: "http://localhost:3030/addtodo",
+        method: "GET",
+        data: {
+            title: "Title",
+            text: "Todo Item",
+            duedate: now,
+            done: 0,
+            priority: 0
+        }
+    })
+    .done(function(data) {
+        if(data == "false") {
+            console.error("addTodo error!", data);
+        }
+        window.todos.draw();
+    })
+    .fail(function(data) {
+        console.error("addTodo error!", data);
+    })
 }
 
 function updateTodoPriority(me) {
-    window._TEMP = me;
     var priority = me.options[me.selectedIndex].value,
         id = me.parentElement.dataset.id;
     for (var i=0; i<todos.array.length; i++) {
@@ -81,6 +102,30 @@ function updateTodoPriority(me) {
             break;
         }
     }
+}
+
+function updateTodoDueDate(me) {
+    var duedate = me.valueAsNumber/1000,
+        id = me.parentElement.dataset.id;
+    for (var i=0; i<todos.array.length; i++) {
+        if(todos.array[i].id == id) {
+            window.todos.array[i].duedate = duedate;
+            break;
+        }
+    }
+    window.todos.draw();
+}
+
+function updateTodoDone(me) {
+    var done = me.checked,
+        id = me.parentElement.dataset.id;
+    for (var i=0; i<todos.array.length; i++) {
+        if(todos.array[i].id == id) {
+            window.todos.array[i].done = done;
+            break;
+        }
+    }
+    window.todos.draw();
 }
 
 var deleteList = function (event) {
@@ -132,8 +177,9 @@ function addList(event) {
 
 }
 
-function Todo (id, text, priority, duedate, done) {
+function Todo (id, title, text, priority, duedate, done) {
     this.id = id;
+    this.title = title;
     this.text = text;
     this.priority = priority;
     this.duedate = duedate;
@@ -152,8 +198,8 @@ function TodoArray () {
 }
 
 TodoArray.prototype = {
-    add: function(id, text, priority, duedate, done) {
-        var todo = new Todo(id, text, priority, duedate, done);
+    add: function(id, title, text, priority, duedate, done) {
+        var todo = new Todo(id, title, text, priority, duedate, done);
         this.array.push(todo);
         if(window.initialDraw) {
             window.todos.draw();
@@ -199,12 +245,21 @@ TodoArray.prototype = {
             li.className = "todo priority_" + priorityItem;
             if (this.array[i].done) {
                 li.className += " done";
-            } else if (this.array[i].duedate < now) {
+            } else if (this.array[i].duedate*1000 < now) {
                 li.className += " overdue";
             }
             li.deleted = false;
             li.dataset.id = this.array[i].id;
             li.dataset.priority = this.array[i].priority;
+            li.dataset.done = this.array[i].done;
+
+            var title = document.createElement("input");
+            title.type = "text";
+            title.value = this.array[i].title;
+            title.className = "todoTitle";
+            title.addEventListener("change", function() {
+                updateTodoTitle(this);
+            });
 
             var btn = document.createElement("i"),
                 btnText = document.createTextNode("delete");
@@ -251,27 +306,46 @@ TodoArray.prototype = {
 
             btn.appendChild(btnText);
 
-            var input = document.createElement("input"),
+            var input = document.createElement("textarea"),
                 inputText = this.array[i].text;
             input.type = "text";
             input.value = inputText;
             input.className = "todoValue";
-            input.addEventListener("keyup", updateTodo, false);
+            input.addEventListener("change", function() {
+                updateTodo(this);
+            });
 
             var duedate = document.createElement("input");
             duedate.type = "date";
-            duedate.valueAsNumber = this.array[i].duedate;
+            duedate.valueAsNumber = this.array[i].duedate*1000;
+            duedate.addEventListener("change", function() {
+                updateTodoDueDate(this);
+            });
+
+            var done = document.createElement("input"),
+                doneText = document.createTextNode("Done");
+            done.type = "checkbox";
+            done.appendChild(doneText);
+            done.addEventListener("change", function() {
+                updateTodoDone(this);
+            });
 
             if(this.array[i].done) {
+                title.disabled = "disabled";
                 input.disabled = "disabled";
                 duedate.disabled = "disabled";
                 priority.disabled = "disabled";
+                done.checked = true;
+            } else {
+                done.checked = false;
             }
 
+            li.appendChild(title);
             li.appendChild(btn);
             li.appendChild(input);
             li.appendChild(priority);
             li.appendChild(duedate);
+            li.appendChild(done);
 
             listEntries.appendChild(li);
         }
@@ -282,7 +356,6 @@ TodoArray.prototype = {
     }
 };
 
-
 function getTodoItems() {
     $.ajax({
        url: "http://localhost:3030/alltodos",
@@ -290,8 +363,8 @@ function getTodoItems() {
     })
     .done(function(data) {
         console.log(data);
-        data.forEach(function (element) {
-            window.todos.add(element.id, element.text, element.priority, element.duedate, element.done);
+        data.forEach(function (el) {
+            window.todos.add(el.id, el.title, el.text, el.priority, el.duedate, el.done);
         });
     })
 }

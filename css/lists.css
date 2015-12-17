@@ -4,6 +4,9 @@
 .todo.overdue > .todoValue {
     border: solid 2px red;
 }
+.mainHeader {
+    background: #1aa1ff;
+}
 #logoutBtn {
     position: absolute;
     top: 5px;
@@ -29,10 +32,10 @@
     background-color: white;
 }
 .list {
-    margin-left: 270px;
+    width: 1024px;
+    margin: 50px auto 50px auto;
 }
 .listHeader {
-    margin-bottom: 55px;
     font-family: "Roboto Slab", sans-serif;
     text-align: center;
     font-size: 25px;
@@ -41,17 +44,45 @@
     font-size: 48px;
     display: block;
     position: relative;
-    float: right;
+    left: 5px;
+    bottom: 5px;
 }
 .listSorting {
-    margin-bottom: 10px;
+    margin: 10px;
 }
 .listEntries {
     list-style: none;
+    margin: 10px;
 }
 .todo {
     line-height: 35px;
+    background-color: #ffffff;
+    box-shadow: 2px 5px 10px rgba(0,0,0,0.5);
+    padding: 10px;
+    margin: 0 auto 25px auto;
 }
 .todo > i {
     line-height: 35px;
+}
+.todoTitle {
+    width: 90%;
+}
+.todoValue {
+    width: 100%;
+    margin-right: 10px;
+}
+.todo > select {
+    margin-right: 10px;
+}
+.todo > input[type="date"] {
+    margin-right: 10px;
+}
+.btnDelete, #addTodoBtn {
+    color: #555555;
+}
+.btnDelete:hover, #addTodoBtn:hover {
+    color: #000;
+}
+.btnDelete {
+    float: right;
 }

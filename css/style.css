@@ -35,6 +35,12 @@ body {
     left: 50%;
     transform: translate(-50%, -100%);
 }
+.quote > span::before {
+    content: "\"";
+}
+.quote > span::after {
+    content: "\"";
+}
 .mainHeaderBtns {
     position: absolute;
     right: 30px;
@@ -101,4 +107,7 @@ body {
     position: relative;
     animation-name: flee;
     animation-duration: 2s;
+}
+.hidden {
+    display: none !important;
 }

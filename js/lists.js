@@ -73,8 +73,13 @@ function addTodo(id) {
 function updateTodoPriority(me) {
     window._TEMP = me;
     var priority = me.options[me.selectedIndex].value,
-        todo = window.todos.array[me.parentElement.dataset.id];
-    console.log(todo);
+        id = me.parentElement.dataset.id;
+    for (var i=0; i<todos.array.length; i++) {
+        if(todos.array[i].id == id) {
+            window.todos.array[i].priority = priority;
+            break;
+        }
+    }
 }
 
 var deleteList = function (event) {
@@ -250,12 +255,11 @@ TodoArray.prototype = {
 
 
 function getTodoItems() {
-    //TODO, database connection to get actual items
-    window.todos = new TodoArray();
-    window.todos.add(5, "Note thing", 0);
-    window.todos.add(6, "Low thing", 1);
-    window.todos.add(7, "Medium thing", 2);
-    window.todos.add(8, "High thing", 3);
-
-    window.todos.draw();
+    $.ajax({
+       url: "http://localhost:3030/alltodos",
+        method: "GET"
+    })
+    .done(function(data) {
+        console.log(data);
+    })
 }

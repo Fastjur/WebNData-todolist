@@ -14,6 +14,7 @@ var http = require('http'),
     bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
+app.use(express.static("..\\" +__dirname));
 
 http.createServer(app).listen(3030);
 console.log("Listening on port 3030");
@@ -58,4 +59,12 @@ app.get("/addtodo", function(req, res) {
     console.log("Recieved /addtodo");
     res.writeHeader(200);
     res.end("true");
+});
+
+app.get("/removetodo", function(reg, res) {
+    var url_parts = url.parse(req.url, true),
+        query = url_parts.query;
+    if(query["id"] !== undefined) {
+        todos.splice(query["id"], 1);
+    }
 });

@@ -23,7 +23,11 @@ window.addEventListener("load", function() {
     });*/
     document.getElementById("addTodoBtn").addEventListener("click", function(event) {
         event.preventDefault();
-        addTodo(0);
+        window.initialDraw = false;
+        addTodo();
+        getTodoItems();
+        window.todos.draw();
+        window.initialDraw = true;
     });
     document.getElementById("sort_todos").addEventListener("click", function() {
         var sortBy = document.getElementById("sort_type").value,
@@ -76,7 +80,7 @@ function addTodo() {
         method: "GET",
         data: {
             title: "Title",
-            text: "Todo Item",
+            text: "Todo",
             duedate: now,
             done: 0,
             priority: 0
@@ -207,13 +211,17 @@ TodoArray.prototype = {
     },
     delete: function(id) {
         console.log("Delete" + id);
-        for(var i=0; i < window.todos.array.length; i++) {
-            console.log(window.todos.array[i]);
-            if(window.todos.array[i].id == id) {
-                window.todos.array.splice(i, 1);
+        $.ajax({
+            url: "http://localhost:3030/removetodo",
+            method: "GET",
+            data: {
+                id: id
             }
-        }
-        window.todos.draw();
+        })
+        .done(function(){
+            getTodoItems();
+            window.todos.draw();
+        });
     },
     editTodo: function(id, text, priority, duedate, done) {
         if(id !== undefined) {
@@ -234,6 +242,26 @@ TodoArray.prototype = {
                 }
             }
         }
+    },
+    updateDatabase: function() {
+        for (var i in this.array) {
+            $.ajax({
+                url: "http://localhost:3030/updatetodo",
+                method: "GET",
+                data: {
+                    title: window.todos.array[i].title,
+                    text: window.todos.array[i].text,
+                    duedate: window.todos.array[i].duedate,
+                    done: window.todos.array[i].done,
+                    priority: window.todos.array[i].priority,
+                    id: window.todos.array[i].id
+                },
+                processData: true,
+                contentType: false
+            })
+        }
+        getTodoItems();
+        window.todos.draw();
     },
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0],
@@ -357,6 +385,7 @@ TodoArray.prototype = {
 };
 
 function getTodoItems() {
+    window.todos = new TodoArray();
     $.ajax({
        url: "http://localhost:3030/alltodos",
         method: "GET"

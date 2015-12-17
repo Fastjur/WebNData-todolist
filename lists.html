@@ -4,16 +4,19 @@
 		<title>Your lists! - MijnGroenteman</title>
         <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
         <script type="text/javascript" src="js/lists.js"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+        <link rel="stylesheet" href="css/style.css"/>
+        <link rel="stylesheet" href="css/lists.css"/>
 	</head>
 	<body>
-		<header>
+    <header class="mainHeader">
 			<h1>Your todo lists</h1>
 			<a href="index.html"><button class="button red" id="logoutBtn">Logout</button></a>
 		</header>
 		<div class="contentLists">
-			<div class="settingsBar">
-				Main settings and lbadklfjasf
-			</div>
+            <!--<div class="settingsBar">
+                Main settings and lbadklfjasf
+            </div>-->
 			<div class="popupBg" style="display: none;">
                 <div class="popupContent" id="addListPopup" style="display: none;">
                     <form id="addListForm">
@@ -24,38 +27,29 @@
                     </form>
                 </div>
             </div>
-			<div class="listsTab">
-				<div class="addList" id="addList">
-					<span>Add list</span>
-					<button>+</button>
-				</div>
-				<ul class="lists" id="lists">
-					<li class="listName deleteListBtn">
-                        <button class="button red">X</button>
-                        <span>Groceries</span>
+            <div class="listsTab">
+                <i class="material-icons" id="addList">add_circle</i>
+                <ul class="lists" id="lists">
+                    <li class="listItem active">
+                        <i class="material-icons deleteListBtn">delete</i>
+                        <span class="listName">Groceries</span>
                     </li>
-                    <li class="listName deleteListBtn">
-                        <button class="button red">X</button>
-                        <span>Kappa</span>
+                    <li class="listItem">
+                        <i class="material-icons deleteListBtn">delete</i>
+                        <span class="listName">Dank Maymays</span>
                     </li>
-                    <li class="listName deleteListBtn">
-                        <button class="button red">X</button>
-                        <span>And his name is</span>
+                    <li class="listItem">
+                        <i class="material-icons deleteListBtn">delete</i>
+                        <span class="listName">And his name is</span>
                     </li>
-                    <li class="listName deleteListBtn">
-                        <button class="button red">X</button>
-                        <span>John Cena!!!!</span>
-                    </li>
-                    <li class="listName deleteListBtn">
-                        <button class="button red">X</button>
-                        <span>Dank Maymays</span>
-                    </li>
-				</ul>
-				<div class="list">
-					<div class="listHeader">
-						<h2>Dank Maymays</h2>
-						<button class="button blue" id="addTodoBtn">+</button>
-					</div>
+                </ul>
+            </div>
+            <div class="list">
+                <div class="listHeader">
+                    <h2>Dank Maymays</h2>
+                    <i class="material-icons" id="addTodoBtn">add_circle</i>
+                </div>
+                <div class="listSorting">
                     <span>Sort by:</span>
                     <select id="sort_type">
                         <option>Priority</option>
@@ -66,11 +60,11 @@
                         <option>Descending</option>
                     </select>
                     <button id="sort_todos">Sort</button>
-                    <ul class="listEntries">
-                        Loading todos...
-                    </ul>
-				</div>
-			</div>
+                </div>
+                <ul class="listEntries">
+                    Loading todos...
+                </ul>
+            </div>
 		</div>
 	</body>
 </html>

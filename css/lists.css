@@ -1,0 +1,57 @@
+.todo.done > .todoValue {
+    border: solid 2px lime;
+}
+.todo.overdue > .todoValue {
+    border: solid 2px red;
+}
+#logoutBtn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.listsTab {
+    position: relative;
+    display: block;
+    width: 250px;
+    min-height: 500px;
+    float: left;
+}
+#addList {
+    position: relative;
+    font-size: 36px;
+}
+.listItem {
+    background-color: #D4D4D4;
+    margin-bottom: 5px;
+    box-shadow: 2px 5px 10px rgba(0,0,0,0.3);
+}
+.listItem.active {
+    background-color: white;
+}
+.list {
+    margin-left: 270px;
+}
+.listHeader {
+    margin-bottom: 55px;
+    font-family: "Roboto Slab", sans-serif;
+    text-align: center;
+    font-size: 25px;
+}
+#addTodoBtn {
+    font-size: 48px;
+    display: block;
+    position: relative;
+    float: right;
+}
+.listSorting {
+    margin-bottom: 10px;
+}
+.listEntries {
+    list-style: none;
+}
+.todo {
+    line-height: 35px;
+}
+.todo > i {
+    line-height: 35px;
+}

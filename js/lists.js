@@ -40,6 +40,7 @@ window.addEventListener("load", function() {
         }
         window.todos.draw();
     });
+    window.todos = new TodoArray();
     window.initialDraw = false;//Prevents the list from being redrawn for every item it gets initially
     getTodoItems();
     window.initialDraw = true;
@@ -94,7 +95,7 @@ function addDeleteEvents() {
     var deleteBtns = document.getElementsByClassName("deleteListBtn");
 
     for(var i=0; i<deleteBtns.length; i++) {
-        deleteBtns[i].children[0].addEventListener("click", deleteList, false);
+        deleteBtns[i].addEventListener("click", deleteList, false);
     }
 }
 
@@ -131,15 +132,18 @@ function addList(event) {
 
 }
 
-function Todo (id, text, priority) {
+function Todo (id, text, priority, duedate, done) {
     this.id = id;
     this.text = text;
     this.priority = priority;
+    this.duedate = duedate;
+    this.done = done;
 }
 
 Todo.prototype = {
     toString: function() {
-        return "Todo: " + this.id + ", text: " + this.text + ", priority: " + this.priority;
+        return "Todo: " + this.id + ", text: " + this.text + ", priority: " + this.priority + ", duedate: " +
+            this.duedate + ", done: " + this.done;
     }
 };
 
@@ -148,8 +152,8 @@ function TodoArray () {
 }
 
 TodoArray.prototype = {
-    add: function(id, text, priority) {
-        var todo = new Todo(id, text, priority);
+    add: function(id, text, priority, duedate, done) {
+        var todo = new Todo(id, text, priority, duedate, done);
         this.array.push(todo);
         if(window.initialDraw) {
             window.todos.draw();
@@ -165,36 +169,50 @@ TodoArray.prototype = {
         }
         window.todos.draw();
     },
-    editTodo: function(id, text, priority) {
-        console.log("Edit" + id);
-        for(var i=0; i < window.todos.array.length; i++) {
-            if(window.todos.array[i].id == id) {
-                window.todos.array[1].text = text;
-                if(priority !== undefined) {
-                    window.todos.array[i].priority = priority;
+    editTodo: function(id, text, priority, duedate, done) {
+        if(id !== undefined) {
+            for(var i=0; i < window.todos.array.length; i++) {
+                if(window.todos.array[i].id == id) {
+                    if(text !== undefined) {
+                        window.todos.array[1].text = text;
+                    }
+                    if(priority !== undefined) {
+                        window.todos.array[i].priority = priority;
+                    }
+                    if(duedate !== undefined) {
+                        window.todos.array[i].duedate = duedate;
+                    }
+                    if(done !== undefined) {
+                        window.todos.array[i].done = done;
+                    }
                 }
             }
         }
-        console.log(window.todos.array);
     },
     draw: function() {
-        var listEntries = document.getElementsByClassName("listEntries")[0];
+        var listEntries = document.getElementsByClassName("listEntries")[0],
+            now = new Date().getTime();
         listEntries.innerHTML = "";
         for(var i=0; i<this.array.length; i++) {
             var li = document.createElement("li"),
                 priorityItem = this.array[i].priority;
             li.className = "todo priority_" + priorityItem;
+            if (this.array[i].done) {
+                li.className += " done";
+            } else if (this.array[i].duedate < now) {
+                li.className += " overdue";
+            }
             li.deleted = false;
             li.dataset.id = this.array[i].id;
             li.dataset.priority = this.array[i].priority;
 
-            var btn = document.createElement("button"),
-                btnText = document.createTextNode("Delete");
+            var btn = document.createElement("i"),
+                btnText = document.createTextNode("delete");
             btn.addEventListener("click", function () {
                 id = this.parentElement.dataset.id;
                 window.todos.delete(id);
             });
-            btn.className = "btnDelete";
+            btn.className = "btnDelete material-icons";
 
             var priority = document.createElement("select"),
                 note = document.createElement("option"),
@@ -240,9 +258,20 @@ TodoArray.prototype = {
             input.className = "todoValue";
             input.addEventListener("keyup", updateTodo, false);
 
+            var duedate = document.createElement("input");
+            duedate.type = "date";
+            duedate.valueAsNumber = this.array[i].duedate;
+
+            if(this.array[i].done) {
+                input.disabled = "disabled";
+                duedate.disabled = "disabled";
+                priority.disabled = "disabled";
+            }
+
             li.appendChild(btn);
             li.appendChild(input);
             li.appendChild(priority);
+            li.appendChild(duedate);
 
             listEntries.appendChild(li);
         }
@@ -261,5 +290,8 @@ function getTodoItems() {
     })
     .done(function(data) {
         console.log(data);
+        data.forEach(function (element) {
+            window.todos.add(element.id, element.text, element.priority, element.duedate, element.done);
+        });
     })
 }

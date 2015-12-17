@@ -62,6 +62,9 @@ body {
 .button.blue:hover {
     box-shadow: 3px 3px 3px rgba(0,0,0,0.5);
 }
+.button.red {
+    background-color: #ff2a00;
+}
 .features {
     width: 1024px;
     margin: 50px auto 0 auto;
@@ -83,4 +86,19 @@ body {
     font-weight: 700;
     background-color: #43ff72;
     text-align: center;
+}
+@keyframes flee {
+    0% {
+        left: 0;
+        background-color: #15B7ED;
+    }
+    100% {
+        left: 250px;
+        background-color: red;
+    }
+}
+.button.flee:hover {
+    position: relative;
+    animation-name: flee;
+    animation-duration: 2s;
 }

@@ -14,27 +14,39 @@ var http = require('http'),
     bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
-app.use(express.static("..\\" +__dirname));
+app.use(express.static(__dirname + "/../"));
 
 http.createServer(app).listen(3030);
 console.log("Listening on port 3030");
 
 var todos = [],
     t1 = {
+        id: 5,
         text: "This is a Note",
-        priority: 0
+        priority: 0,
+        duedate: 1450569600,
+        done: false
     },
     t2 = {
+        id: 6,
         text: "This is a Low",
-        priority: 1
+        priority: 1,
+        duedate: 1450569600,
+        done: false
     },
     t3 = {
+        id: 9,
         text: "This is a Medium",
-        priority: 2
+        priority: 2,
+        duedate: 1450310400,
+        done: true
     },
     t4 = {
+        id: 8,
         text: "This is a High",
-        priority: 3
+        priority: 3,
+        duedate: 1450224000,
+        done: false
     };
 todos.push(t1);
 todos.push(t2);
@@ -61,10 +73,16 @@ app.get("/addtodo", function(req, res) {
     res.end("true");
 });
 
-app.get("/removetodo", function(reg, res) {
+app.get("/removetodo", function(req, res) {
+    console.log("Received /removetodo");
     var url_parts = url.parse(req.url, true),
         query = url_parts.query;
     if(query["id"] !== undefined) {
         todos.splice(query["id"], 1);
+        res.writeHeader(200);
+        res.end("true");
+    } else {
+        res.writeHeader(200);
+        res.end("false");
     }
 });

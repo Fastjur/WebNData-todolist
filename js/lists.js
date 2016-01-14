@@ -2,7 +2,14 @@
  * Created by Jurriaan on 19-11-2015.
  *
  */
-var updateDbTimeout;
+var updateDbTimeout,
+    titleSizeCookie = Cookies.get('titlesize');
+if (titleSizeCookie === undefined) {
+    titleSize = 20;
+    Cookies.set('titlesize', 20);
+} else {
+    titleSize = titleSizeCookie;
+}
 window.addEventListener("load", function() {
     console.log("lists.js loaded");
     document.getElementById("logoutBtn").addEventListener("click", function(event) {
@@ -18,29 +25,9 @@ window.addEventListener("load", function() {
         window.todos.draw();
         window.initialDraw = true;
     });
-    document.getElementById("sort_todos").addEventListener("click", function() {
-        var sortBy = document.getElementById("sort_type").value,
-            sortOrder = document.getElementById("sort_order").value;
-        if (sortBy == "Priority") {
-            window.todos.array.sort(function(a, b) {
-                if (sortOrder == "Descending") {
-                    return b.priority - a.priority;
-                } else if (sortOrder == "Ascending") {
-                    return a.priority - b.priority;
-                }
-            });
-        } else if (sortBy == "Duedate") {
-            window.todos.array.sort(function(a, b) {
-                if (sortOrder == "Descending") {
-                    return b.duedate - a.duedate;
-                } else if (sortOrder == "Ascending") {
-                    return a.duedate - b.duedate;
-                }
-            });
-        }
-        window.todos.draw();
-    });
     window.todos = new TodoArray();
+    document.getElementById("sort_todos").addEventListener("click", sortTodos);
+    document.getElementsByClassName('fontSizeContainer')[0].addEventListener("click", updateTitleSize);
     window.initialDraw = false;//Prevents the list from being redrawn for every item it gets initially
     getTodoItems();
     window.initialDraw = true;
@@ -48,6 +35,66 @@ window.addEventListener("load", function() {
 
     updateDbTimeout = window.setInterval(function() {window.todos.updateDatabase()}, 5000);
 });
+
+var updateTitleSize = function(el) {
+    var val = el.target.dataset.val;
+    switch (val) {
+        case ("1"):
+            console.log(titleSize);
+            if (titleSize < 35) {
+                titleSize++;
+            }
+            break;
+        case ("-1"):
+            if (titleSize > 12) {
+                titleSize--;
+            }
+            break
+    }
+    Cookies.set('titlesize', titleSize);
+    $(".todoTitle").each(function() {
+        this.style.fontSize = titleSize + "px";
+    });
+};
+
+var sortTodos = function() {
+    var sortBy = document.getElementById("sort_type").value,
+        sortOrder = document.getElementById("sort_order").value;
+    if (sortBy == "Priority") {
+        window.todos.array.sort(function(a, b) {
+            if (sortOrder == "Descending") {
+                Cookies.set('sorting', {
+                    by: 'Priority',
+                    order: 'Descending'
+                });
+                return b.priority - a.priority;
+            } else if (sortOrder == "Ascending") {
+                Cookies.set('sorting', {
+                    by: 'Priority',
+                    order: 'Ascending'
+                });
+                return a.priority - b.priority;
+            }
+        });
+    } else if (sortBy == "Duedate") {
+        window.todos.array.sort(function(a, b) {
+            if (sortOrder == "Descending") {
+                Cookies.set('sorting', {
+                    by: 'Duedate',
+                    order: 'Descending'
+                });
+                return b.duedate - a.duedate;
+            } else if (sortOrder == "Ascending") {
+                Cookies.set('sorting', {
+                    by: 'Duedate',
+                    order: 'Ascending'
+                });
+                return a.duedate - b.duedate;
+            }
+        });
+    }
+    window.todos.draw();
+};
 
 var updateTodo = function (me) {
     var text = me.value,
@@ -77,8 +124,8 @@ function addTodo() {
         url: "http://localhost:3030/addtodo",
         method: "GET",
         data: {
-            title: "Title",
-            text: "Todo",
+            title: "New Note",
+            text: "",
             duedate: now,
             done: 0,
             priority: 0
@@ -235,6 +282,7 @@ TodoArray.prototype = {
             title.type = "text";
             title.value = this.array[i].title;
             title.className = "todoTitle";
+            title.style.fontSize = titleSize + "px";
             title.addEventListener("change", function() {
                 updateTodoTitle(this);
             });
@@ -361,6 +409,12 @@ function getTodoItems() {
         data.forEach(function (el) {
             window.todos.add(el.id, el.title, el.text, el.priority, el.duedate, el.done);
         });
+        var sort = Cookies.getJSON('sorting');
+        if (sort !== undefined) {
+            document.getElementById("sort_type").value = sort.by;
+            document.getElementById("sort_order").value = sort.order;
+            sortTodos();
+        }
     })
 }
 

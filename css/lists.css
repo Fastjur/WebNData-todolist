@@ -7,6 +7,24 @@
 .mainHeader {
     background: #1aa1ff;
 }
+.fontSizeContainer {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #B5B5B5;
+}
+.fontSizeContainer > label:hover {
+    color: #000;
+}
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 #logoutBtn {
     position: absolute;
     top: 5px;
@@ -66,6 +84,11 @@
 }
 .todoTitle {
     width: 90%;
+    border: none;
+    border-bottom: 2px solid #B5B5B5;
+}
+.todoTitle:focus {
+    border-bottom: 2px solid #000;
 }
 .todoValue {
     width: 100%;

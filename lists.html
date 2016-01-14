@@ -3,6 +3,7 @@
 	<head>
 		<title>Your lists! - MijnGroenteman</title>
         <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="lib/js.cookie.js"></script>
         <script type="text/javascript" src="js/lists.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
         <link rel="stylesheet" href="css/style.css"/>
@@ -10,6 +11,10 @@
 	</head>
 	<body>
     <header class="mainHeader">
+        <div class="fontSizeContainer noselect">
+            <label id="fontMinus" class="noselect" data-val="-1">-</label>
+            <label id="fontPlus" class="noselect" data-val="1">+</label>
+        </div>
 			<h1>Your todo lists</h1>
 			<a href="index.html"><button class="button red" id="logoutBtn">Logout</button></a>
 		</header>

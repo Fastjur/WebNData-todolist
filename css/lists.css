@@ -86,3 +86,11 @@
 .btnDelete {
     float: right;
 }
+.donecheck:after {
+    content: "Done";
+    margin-left: 1em;
+    color: #555555;
+}
+.donecheck:checked:after {
+    color: #4dc71f;
+}

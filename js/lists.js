@@ -1,6 +1,8 @@
 /**
  * Created by Jurriaan on 19-11-2015.
+ *
  */
+var updateDbTimeout;
 window.addEventListener("load", function() {
     console.log("lists.js loaded");
     document.getElementById("logoutBtn").addEventListener("click", function(event) {
@@ -32,7 +34,6 @@ window.addEventListener("load", function() {
     document.getElementById("sort_todos").addEventListener("click", function() {
         var sortBy = document.getElementById("sort_type").value,
             sortOrder = document.getElementById("sort_order").value;
-        console.log(sortBy, sortOrder);
         if (sortBy == "Priority") {
             window.todos.array.sort(function(a, b) {
                 if (sortOrder == "Descending") {
@@ -49,6 +50,8 @@ window.addEventListener("load", function() {
     getTodoItems();
     window.initialDraw = true;
     addDeleteEvents();
+
+    updateDbTimeout = window.setInterval(function() {window.todos.updateDatabase()}, 5000);
 });
 
 var updateTodo = function (me) {
@@ -74,7 +77,7 @@ var updateTodoTitle = function (me) {
 };
 
 function addTodo() {
-    var now = Math.round(new Date().getTime()/1000);
+    var now = formatDate(new Date());
     $.ajax({
         url: "http://localhost:3030/addtodo",
         method: "GET",
@@ -148,7 +151,7 @@ function addDeleteEvents() {
     }
 }
 
-function showAddList(event) {
+/*function showAddList(event) {
     event.preventDefault();
 
     document.getElementById("addListName").value = "";
@@ -179,7 +182,7 @@ function addList(event) {
     $(".popupBg").hide();
     $(".popupContent").hide();
 
-}
+}*/
 
 function Todo (id, title, text, priority, duedate, done) {
     this.id = id;
@@ -210,7 +213,6 @@ TodoArray.prototype = {
         }
     },
     delete: function(id) {
-        console.log("Delete" + id);
         $.ajax({
             url: "http://localhost:3030/removetodo",
             method: "GET",
@@ -223,7 +225,7 @@ TodoArray.prototype = {
             window.todos.draw();
         });
     },
-    editTodo: function(id, text, priority, duedate, done) {
+/*    editTodo: function(id, text, priority, duedate, done) {
         if(id !== undefined) {
             for(var i=0; i < window.todos.array.length; i++) {
                 if(window.todos.array[i].id == id) {
@@ -242,26 +244,32 @@ TodoArray.prototype = {
                 }
             }
         }
-    },
+    },*/
     updateDatabase: function() {
         for (var i in this.array) {
+
+            var title = window.todos.array[i].title,
+            text = window.todos.array[i].text,
+            duedate = formatDate(new Date(window.todos.array[i].duedate*1000)),
+            done = window.todos.array[i].done,
+            priority = window.todos.array[i].priority,
+            id = window.todos.array[i].id;
+
             $.ajax({
                 url: "http://localhost:3030/updatetodo",
                 method: "GET",
                 data: {
-                    title: window.todos.array[i].title,
-                    text: window.todos.array[i].text,
-                    duedate: window.todos.array[i].duedate,
-                    done: window.todos.array[i].done,
-                    priority: window.todos.array[i].priority,
-                    id: window.todos.array[i].id
+                    title: title,
+                    text: text,
+                    duedate: duedate,
+                    done: done ? 1 : 0,
+                    priority: priority,
+                    id: id
                 },
                 processData: true,
                 contentType: false
             })
         }
-        getTodoItems();
-        window.todos.draw();
     },
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0],
@@ -292,7 +300,7 @@ TodoArray.prototype = {
             var btn = document.createElement("i"),
                 btnText = document.createTextNode("delete");
             btn.addEventListener("click", function () {
-                id = this.parentElement.dataset.id;
+                var id = this.parentElement.dataset.id;
                 window.todos.delete(id);
             });
             btn.className = "btnDelete material-icons";
@@ -353,6 +361,7 @@ TodoArray.prototype = {
             var done = document.createElement("input"),
                 doneText = document.createTextNode("Done");
             done.type = "checkbox";
+            done.className = "donecheck";
             done.appendChild(doneText);
             done.addEventListener("change", function() {
                 updateTodoDone(this);
@@ -381,6 +390,22 @@ TodoArray.prototype = {
         if(this.array.length == 0) {
             listEntries.innerHTML = "<span class=\"error\">No data found in array!</span>";
         }
+    },
+    equals: function(that) {
+        if (!(that instanceof TodoArray)) {
+            return false;
+        }
+        for (var i in this.array) {
+
+
+            var title = window.todos.array[i].title,
+                text = window.todos.array[i].text,
+                duedate = formatDate(new Date(window.todos.array[i].duedate * 1000)),
+                done = window.todos.array[i].done,
+                priority = window.todos.array[i].priority,
+                id = window.todos.array[i].id;
+            //TODO
+        }
     }
 };
 
@@ -391,9 +416,17 @@ function getTodoItems() {
         method: "GET"
     })
     .done(function(data) {
-        console.log(data);
         data.forEach(function (el) {
             window.todos.add(el.id, el.title, el.text, el.priority, el.duedate, el.done);
         });
     })
+}
+
+function formatDate(date) {
+    return date.getFullYear() + "-" +
+           ("0" + (date.getMonth()+1)).slice(-2) + "-" +
+           ("0" + date.getDate()).slice(-2) + " " +
+           ("0" + date.getHours()).slice(-2) + ":" +
+           ("0" + date.getMinutes()).slice(-2) + ":" +
+           ("0" + date.getSeconds()).slice(-2);
 }

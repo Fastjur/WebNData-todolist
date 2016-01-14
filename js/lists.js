@@ -10,19 +10,6 @@ window.addEventListener("load", function() {
         //TODO: destroy session and notify user of logout...
         window.location.href = "index.html";
     });
-    /*document.getElementById("addList").addEventListener("click", function(event) {
-        showAddList(event);
-    });
-    document.getElementById("addListBtn").addEventListener("click", function(event) {
-        addList(event);
-    });
-    document.getElementById("cancelAddListBtn").addEventListener("click", function(event) {
-        event.preventDefault();
-
-        document.getElementById("addListName").value = "";
-        $(".popupBg").hide();
-        $(".popupContent").hide();
-    });*/
     document.getElementById("addTodoBtn").addEventListener("click", function(event) {
         event.preventDefault();
         window.initialDraw = false;
@@ -159,39 +146,6 @@ function addDeleteEvents() {
     }
 }
 
-/*function showAddList(event) {
-    event.preventDefault();
-
-    document.getElementById("addListName").value = "";
-    $(".popupBg").show();
-    $(".popupContent").hide(); //Hides all other popups except addList
-    $("#addListPopup").show();
-}
-
-function addList(event) {
-    event.preventDefault();
-
-    var list = document.getElementById("lists"),
-        name = document.getElementById("addListName").value,
-        child = document.createElement("li"),
-        button = document.createElement("button"),
-        span = document.createElement("span");
-    child.className = "listName deleteListBtn";
-    button.className = "button red";
-    button.appendChild(document.createTextNode("X"));
-    child.appendChild(button);
-    span.appendChild(document.createTextNode(name));
-    child.appendChild(span);
-
-    button.addEventListener("click", deleteList, false);
-
-    list.appendChild(child);
-
-    $(".popupBg").hide();
-    $(".popupContent").hide();
-
-}*/
-
 function Todo (id, title, text, priority, duedate, done) {
     this.id = id;
     this.title = title;
@@ -233,26 +187,6 @@ TodoArray.prototype = {
             window.todos.draw();
         });
     },
-/*    editTodo: function(id, text, priority, duedate, done) {
-        if(id !== undefined) {
-            for(var i=0; i < window.todos.array.length; i++) {
-                if(window.todos.array[i].id == id) {
-                    if(text !== undefined) {
-                        window.todos.array[1].text = text;
-                    }
-                    if(priority !== undefined) {
-                        window.todos.array[i].priority = priority;
-                    }
-                    if(duedate !== undefined) {
-                        window.todos.array[i].duedate = duedate;
-                    }
-                    if(done !== undefined) {
-                        window.todos.array[i].done = done;
-                    }
-                }
-            }
-        }
-    },*/
     updateDatabase: function() {
         for (var i in this.array) {
 

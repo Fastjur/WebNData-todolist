@@ -42,6 +42,14 @@ window.addEventListener("load", function() {
                     return a.priority - b.priority;
                 }
             });
+        } else if (sortBy == "Duedate") {
+            window.todos.array.sort(function(a, b) {
+                if (sortOrder == "Descending") {
+                    return b.duedate - a.duedate;
+                } else if (sortOrder == "Ascending") {
+                    return a.duedate - b.duedate;
+                }
+            });
         }
         window.todos.draw();
     });

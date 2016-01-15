@@ -15,7 +15,30 @@ var express = require('express'),
     url = require('url'),
     bodyParser = require('body-parser'),
     db = require('./todos.js'),
-    dashboard = require('./dashboard.js');
+    dashboard = require('./dashboard.js'),
+    credentials = require('./credentials.js'),
+    passport = require('passport'),
+    TwitterStrategy = require('passport-twitter').Strategy,
+    cookies = require('cookie-parser'),
+    sessions = require('express-session');
+
+app.use(cookies(credentials.cookieSecret));
+app.use(sessions(credentials.cookieSecret));
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+    done(null, user);
+});
+
+passport.use(new TwitterStrategy(credentials.twitter, function(token, tokenSecret, profile, done) {
+    console.log(token, tokenSecret, profile, done);
+    done(null, {message: "Twitter user signed in!"} );
+}));
 
 app.use(bodyParser.json());
 app.use(express.static(__dirname + "/../"));
@@ -54,4 +77,22 @@ app.get("/d+a+s+h+b+o+a+r+d+", function(req, res) {
 app.get("/u+p+d+a+t+e+t+o+d+o+", function(req, res) {
     console.log("Received /updatetodo");
     db.updateTodo(req, res);
+});
+
+// Redirect the user to Twitter for authentication.
+app.get('/auth/twitter', passport.authenticate('twitter'));
+
+// Twitter will redirect the user to this URL after approval.
+app.get('/test-login',
+    passport.authenticate('twitter', { failureRedirect: '/failure' }),
+    function(req, res) {
+res.redirect('/success');
+});
+app.get("/success", function (req, res) {
+    console.log("Success!");
+    res.redirect("/lists");
+});
+app.get("/failure", function (req, res) {
+    console.log("Failure!");
+    res.send("User login via Twitter failed!");
 });

@@ -5,11 +5,15 @@
   "main": "index.js",
   "dependencies": {
     "bignumber.js": "^2.1.4",
+    "cookie-parser": "^1.4.1",
     "core-util-is": "^1.0.2",
     "ejs": "^1.0.0",
+    "express-session": "^1.13.0",
     "inherits": "^2.0.1",
     "isarray": "^0.0.1",
     "mysql": "^2.9.0",
+    "passport": "^0.3.2",
+    "passport-twitter": "^1.0.3",
     "readable-stream": "^1.1.13",
     "string_decoder": "^0.10.31"
   },

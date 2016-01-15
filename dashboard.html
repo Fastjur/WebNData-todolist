@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/dashboard.js"></script>
+</head>
+<body>
+    <div>
+        <h2>number of todo entries per tag</h2>
+        <p class="stat" id='numToDosPerTag'></p>
+        <!--todo: allow the user to select the list they want to search in-->
+        <h2>number of todos in the shared list that have a longer than average completion time</h2>
+        <p class="stat" id='numToDosLongComplete'></p>
+        <h2>the average completion time in the shared list</h2>
+        <p class="stat" id="averageCompletionTime"></p>
+        <h2>lists that have an item with tag id 5</h2>
+        <p class="stat" id="listsWithTag"></p>
+
+        <button class='button' id='btnRefresh'>refresh</button>
+    </div>
+</body>
+</html>

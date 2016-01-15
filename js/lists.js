@@ -263,7 +263,7 @@ TodoArray.prototype = {
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0],
             now = new Date().getTime();
-        /*listEntries.innerHTML = "";
+        listEntries.innerHTML = "";
         for(var i=0; i<this.array.length; i++) {
             var li = document.createElement("li"),
                 priorityItem = this.array[i].priority;
@@ -377,10 +377,7 @@ TodoArray.prototype = {
             listEntries.appendChild(li);
         }
 
-        if(this.array.length == 0) {
-            listEntries.innerHTML = "<span class=\"error\">No data found in array!</span>";
-        }*/
-
+        /*
         document.getElementsByClassName("todoTitle").addEventListener("change", function() {
             updateTodoTitle(this);
         });
@@ -405,23 +402,8 @@ TodoArray.prototype = {
         document.getElementById("donecheck").addEventListener("change", function() {
             updateTodoDone(this);
         });
+        */
     },
-    equals: function(that) {
-        if (!(that instanceof TodoArray)) {
-            return false;
-        }
-        for (var i in this.array) {
-
-
-            var title = window.todos.array[i].title,
-                text = window.todos.array[i].text,
-                duedate = formatDate(new Date(window.todos.array[i].duedate * 1000)),
-                done = window.todos.array[i].done,
-                priority = window.todos.array[i].priority,
-                id = window.todos.array[i].id;
-            //TODO
-        }
-    }
 };
 
 function getTodoItems() {

@@ -48,14 +48,14 @@
                         <li class="<%=todo.getClass%>">
                             <input type="text" value="<%=todo.title%>" class="todoTitle" style="font-size: 20px">
                             <i class="btnDelete material-icons">delete</i>
-                            <select>
+                            <select id="priority">
                                 <option value="0">Note</option>
                                 <option value="1">Low</option>
                                 <option value="2">Medium</option>
                                 <option value="3">High</option>
                             </select>
-                            <textarea typeof="text" class="todoValue"></textarea>
-                            <input type="date" value="<%=todo.duedate*1000%>">
+                            <textarea typeof="text" class="todoValue"><%=this.array[i].text%></textarea>
+                            <input id="dateInput" type="date" value="<%=todo.duedate*1000%>">
                             <input type="checkbox" class="donecheck">Done
                         </li>
                     <%})%>

@@ -263,7 +263,7 @@ TodoArray.prototype = {
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0],
             now = new Date().getTime();
-        listEntries.innerHTML = "";
+        /*listEntries.innerHTML = "";
         for(var i=0; i<this.array.length; i++) {
             var li = document.createElement("li"),
                 priorityItem = this.array[i].priority;
@@ -379,7 +379,32 @@ TodoArray.prototype = {
 
         if(this.array.length == 0) {
             listEntries.innerHTML = "<span class=\"error\">No data found in array!</span>";
-        }
+        }*/
+
+        document.getElementsByClassName("todoTitle").addEventListener("change", function() {
+            updateTodoTitle(this);
+        });
+
+        document.getElementsByClassName("btnDelete material-icons").addEventListener("click", function () {
+            var id = this.parentElement.dataset.id;
+            window.todos.delete(id);
+        });
+
+        document.getElementById("priority").addEventListener("change", function() {
+            updateTodoPriority(this);
+        });
+
+        document.getElementsByClassName("todoValue").addEventListener("change", function() {
+            updateTodo(this);
+        });
+
+        document.getElementById("dateInput").addEventListener("change", function() {
+            updateTodoDueDate(this);
+        });
+
+        document.getElementById("donecheck").addEventListener("change", function() {
+            updateTodoDone(this);
+        });
     },
     equals: function(that) {
         if (!(that instanceof TodoArray)) {

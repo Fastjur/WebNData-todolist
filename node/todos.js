@@ -5,6 +5,29 @@
 var db = require("./mysqlconn.js");
 var url = require("url");
 
+var getLists = function(res) {
+    db.connection.query("SELECT Id, Title, Text, DueDate, Completed, Priority FROM ToDoItem;", function(err, rows) {
+        if(!err) {
+            var todos = [];
+            for (var i in rows) {
+                var todo = {
+                    id: rows[i].Id,
+                    title: rows[i].Title,
+                    text: rows[i].Text,
+                    duedate: new Date(rows[i].DueDate).getTime() / 1000,
+                    done: rows[i].Completed,
+                    priority: rows[i].Priority
+                };
+                todos.push(todo);
+            }
+            res.render('lists', {todo_array: todos});
+            //res.json(todos);
+        } else {
+            console.log("alltodos query error", err);
+        }
+    });
+};
+
 var getAllTodos = function(res) {
     db.connection.query("SELECT Id, Title, Text, DueDate, Completed, Priority FROM ToDoItem;", function(err, rows) {
         if(!err) {
@@ -20,8 +43,8 @@ var getAllTodos = function(res) {
                 };
                 todos.push(todo);
             }
-            res.render('todos', {todo_array: todos});
-            //res.json(todos);
+            //res.render('todos', {todo_array: todos});
+            res.json(todos);
         } else {
             console.log("alltodos query error", err);
         }
@@ -85,6 +108,7 @@ var updateTodo = function(req, res) {
     })
 };
 
+module.exports.getLists = getLists;
 module.exports.getAllTodos = getAllTodos;
 module.exports.addTodo = addTodo;
 module.exports.removeTodo = removeTodo;

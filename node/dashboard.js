@@ -9,7 +9,7 @@ var numToDosPerTag, numToDosLongComplete, averageCompletionTime, listsWithTag;
 
 var getDashboardInfo = function(req, res) {
     db.connection.query(
-        "SELECT tag.text, COUNT(item.Completed) " +
+        "SELECT tag.text, COUNT(item.Completed) as num " +
         "FROM ToDoItem item, ItemTag iTag, Tag tag " +
         "WHERE iTag.ToDoId = item.Id " +
         "AND iTag.TagId = tag.Id " +
@@ -26,17 +26,17 @@ var getDashboardInfo = function(req, res) {
     );
 
     db.connection.query(
-        "SELECT list.name, item.Title" +
-        "FROM ToDoList list, ToDoItem item" +
-        "WHERE" +
-        "item.CompletionDate > item.CreationDate"+
-        "AND list.Name LIKE \"Shared\"" +
-        "AND DATEDIFF(item.CompletionDate, item.CreationDate) >" +
-        "(SELECT AVG(DATEDIFF(listItem.CompletionDate, listItem.CreationDate))" +
-        "FROM ToDoItem listItem" +
-        "WHERE" +
-        "list.Id = listItem.ToDoListId" +
-        "AND list.Name LIKE \"Shared\")" +
+        "SELECT list.name, item.Title " +
+        "FROM ToDoList list, ToDoItem item " +
+        "WHERE " +
+        "item.CompletionDate > item.CreationDate "+
+        "AND list.Name LIKE \"Shared\" " +
+        "AND DATEDIFF(item.CompletionDate, item.CreationDate) > " +
+        "(SELECT AVG(DATEDIFF(listItem.CompletionDate, listItem.CreationDate)) " +
+        "FROM ToDoItem listItem " +
+        "WHERE " +
+        "list.Id = listItem.ToDoListId " +
+        "AND list.Name LIKE \"Shared\") " +
         "GROUP BY item.Title;",
         function(err, rows) {
             if (err) {
@@ -70,7 +70,7 @@ var getDashboardInfo = function(req, res) {
 
     db.connection.query(
         "Select DISTINCT list.* "+
-        "FROM ToDoList list,  Tag tag, ItemTag iTag, ToDoItem item"+
+        "FROM ToDoList list,  Tag tag, ItemTag iTag, ToDoItem item "+
         "WHERE tag.Id = iTag.TagId " +
         "AND item.Id = iTag.ToDoId " +
         "AND list.Id = item.ToDoListId " +

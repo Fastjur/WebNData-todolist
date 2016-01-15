@@ -1,6 +1,15 @@
 /**
  * Created by Jurriaan on 19-11-2015.
+ *
  */
+var updateDbTimeout,
+    titleSizeCookie = Cookies.get('titlesize');
+if (titleSizeCookie === undefined) {
+    titleSize = 20;
+    Cookies.set('titlesize', 20);
+} else {
+    titleSize = titleSizeCookie;
+}
 window.addEventListener("load", function() {
     console.log("lists.js loaded");
     document.getElementById("logoutBtn").addEventListener("click", function(event) {
@@ -8,19 +17,6 @@ window.addEventListener("load", function() {
         //TODO: destroy session and notify user of logout...
         window.location.href = "index.html";
     });
-    /*document.getElementById("addList").addEventListener("click", function(event) {
-        showAddList(event);
-    });
-    document.getElementById("addListBtn").addEventListener("click", function(event) {
-        addList(event);
-    });
-    document.getElementById("cancelAddListBtn").addEventListener("click", function(event) {
-        event.preventDefault();
-
-        document.getElementById("addListName").value = "";
-        $(".popupBg").hide();
-        $(".popupContent").hide();
-    });*/
     document.getElementById("addTodoBtn").addEventListener("click", function(event) {
         event.preventDefault();
         window.initialDraw = false;
@@ -29,27 +25,76 @@ window.addEventListener("load", function() {
         window.todos.draw();
         window.initialDraw = true;
     });
-    document.getElementById("sort_todos").addEventListener("click", function() {
-        var sortBy = document.getElementById("sort_type").value,
-            sortOrder = document.getElementById("sort_order").value;
-        console.log(sortBy, sortOrder);
-        if (sortBy == "Priority") {
-            window.todos.array.sort(function(a, b) {
-                if (sortOrder == "Descending") {
-                    return b.priority - a.priority;
-                } else if (sortOrder == "Ascending") {
-                    return a.priority - b.priority;
-                }
-            });
-        }
-        window.todos.draw();
-    });
     window.todos = new TodoArray();
+    document.getElementById("sort_todos").addEventListener("click", sortTodos);
+    document.getElementsByClassName('fontSizeContainer')[0].addEventListener("click", updateTitleSize);
     window.initialDraw = false;//Prevents the list from being redrawn for every item it gets initially
     getTodoItems();
     window.initialDraw = true;
     addDeleteEvents();
+
+    updateDbTimeout = window.setInterval(function() {window.todos.updateDatabase()}, 5000);
 });
+
+var updateTitleSize = function(el) {
+    var val = el.target.dataset.val;
+    switch (val) {
+        case ("1"):
+            console.log(titleSize);
+            if (titleSize < 35) {
+                titleSize++;
+            }
+            break;
+        case ("-1"):
+            if (titleSize > 12) {
+                titleSize--;
+            }
+            break
+    }
+    Cookies.set('titlesize', titleSize);
+    $(".todoTitle").each(function() {
+        this.style.fontSize = titleSize + "px";
+    });
+};
+
+var sortTodos = function() {
+    var sortBy = document.getElementById("sort_type").value,
+        sortOrder = document.getElementById("sort_order").value;
+    if (sortBy == "Priority") {
+        window.todos.array.sort(function(a, b) {
+            if (sortOrder == "Descending") {
+                Cookies.set('sorting', {
+                    by: 'Priority',
+                    order: 'Descending'
+                });
+                return b.priority - a.priority;
+            } else if (sortOrder == "Ascending") {
+                Cookies.set('sorting', {
+                    by: 'Priority',
+                    order: 'Ascending'
+                });
+                return a.priority - b.priority;
+            }
+        });
+    } else if (sortBy == "Duedate") {
+        window.todos.array.sort(function(a, b) {
+            if (sortOrder == "Descending") {
+                Cookies.set('sorting', {
+                    by: 'Duedate',
+                    order: 'Descending'
+                });
+                return b.duedate - a.duedate;
+            } else if (sortOrder == "Ascending") {
+                Cookies.set('sorting', {
+                    by: 'Duedate',
+                    order: 'Ascending'
+                });
+                return a.duedate - b.duedate;
+            }
+        });
+    }
+    window.todos.draw();
+};
 
 var updateTodo = function (me) {
     var text = me.value,
@@ -74,13 +119,13 @@ var updateTodoTitle = function (me) {
 };
 
 function addTodo() {
-    var now = Math.round(new Date().getTime()/1000);
+    var now = formatDate(new Date());
     $.ajax({
         url: "http://localhost:3030/addtodo",
         method: "GET",
         data: {
-            title: "Title",
-            text: "Todo",
+            title: "New Note",
+            text: "",
             duedate: now,
             done: 0,
             priority: 0
@@ -148,39 +193,6 @@ function addDeleteEvents() {
     }
 }
 
-function showAddList(event) {
-    event.preventDefault();
-
-    document.getElementById("addListName").value = "";
-    $(".popupBg").show();
-    $(".popupContent").hide(); //Hides all other popups except addList
-    $("#addListPopup").show();
-}
-
-function addList(event) {
-    event.preventDefault();
-
-    var list = document.getElementById("lists"),
-        name = document.getElementById("addListName").value,
-        child = document.createElement("li"),
-        button = document.createElement("button"),
-        span = document.createElement("span");
-    child.className = "listName deleteListBtn";
-    button.className = "button red";
-    button.appendChild(document.createTextNode("X"));
-    child.appendChild(button);
-    span.appendChild(document.createTextNode(name));
-    child.appendChild(span);
-
-    button.addEventListener("click", deleteList, false);
-
-    list.appendChild(child);
-
-    $(".popupBg").hide();
-    $(".popupContent").hide();
-
-}
-
 function Todo (id, title, text, priority, duedate, done) {
     this.id = id;
     this.title = title;
@@ -210,7 +222,6 @@ TodoArray.prototype = {
         }
     },
     delete: function(id) {
-        console.log("Delete" + id);
         $.ajax({
             url: "http://localhost:3030/removetodo",
             method: "GET",
@@ -223,45 +234,31 @@ TodoArray.prototype = {
             window.todos.draw();
         });
     },
-    editTodo: function(id, text, priority, duedate, done) {
-        if(id !== undefined) {
-            for(var i=0; i < window.todos.array.length; i++) {
-                if(window.todos.array[i].id == id) {
-                    if(text !== undefined) {
-                        window.todos.array[1].text = text;
-                    }
-                    if(priority !== undefined) {
-                        window.todos.array[i].priority = priority;
-                    }
-                    if(duedate !== undefined) {
-                        window.todos.array[i].duedate = duedate;
-                    }
-                    if(done !== undefined) {
-                        window.todos.array[i].done = done;
-                    }
-                }
-            }
-        }
-    },
     updateDatabase: function() {
         for (var i in this.array) {
+
+            var title = window.todos.array[i].title,
+            text = window.todos.array[i].text,
+            duedate = formatDate(new Date(window.todos.array[i].duedate*1000)),
+            done = window.todos.array[i].done,
+            priority = window.todos.array[i].priority,
+            id = window.todos.array[i].id;
+
             $.ajax({
                 url: "http://localhost:3030/updatetodo",
                 method: "GET",
                 data: {
-                    title: window.todos.array[i].title,
-                    text: window.todos.array[i].text,
-                    duedate: window.todos.array[i].duedate,
-                    done: window.todos.array[i].done,
-                    priority: window.todos.array[i].priority,
-                    id: window.todos.array[i].id
+                    title: title,
+                    text: text,
+                    duedate: duedate,
+                    done: done ? 1 : 0,
+                    priority: priority,
+                    id: id
                 },
                 processData: true,
                 contentType: false
             })
         }
-        getTodoItems();
-        window.todos.draw();
     },
     draw: function() {
         var listEntries = document.getElementsByClassName("listEntries")[0],
@@ -285,6 +282,7 @@ TodoArray.prototype = {
             title.type = "text";
             title.value = this.array[i].title;
             title.className = "todoTitle";
+            title.style.fontSize = titleSize + "px";
             title.addEventListener("change", function() {
                 updateTodoTitle(this);
             });
@@ -292,7 +290,7 @@ TodoArray.prototype = {
             var btn = document.createElement("i"),
                 btnText = document.createTextNode("delete");
             btn.addEventListener("click", function () {
-                id = this.parentElement.dataset.id;
+                var id = this.parentElement.dataset.id;
                 window.todos.delete(id);
             });
             btn.className = "btnDelete material-icons";
@@ -353,6 +351,7 @@ TodoArray.prototype = {
             var done = document.createElement("input"),
                 doneText = document.createTextNode("Done");
             done.type = "checkbox";
+            done.className = "donecheck";
             done.appendChild(doneText);
             done.addEventListener("change", function() {
                 updateTodoDone(this);
@@ -381,6 +380,22 @@ TodoArray.prototype = {
         if(this.array.length == 0) {
             listEntries.innerHTML = "<span class=\"error\">No data found in array!</span>";
         }
+    },
+    equals: function(that) {
+        if (!(that instanceof TodoArray)) {
+            return false;
+        }
+        for (var i in this.array) {
+
+
+            var title = window.todos.array[i].title,
+                text = window.todos.array[i].text,
+                duedate = formatDate(new Date(window.todos.array[i].duedate * 1000)),
+                done = window.todos.array[i].done,
+                priority = window.todos.array[i].priority,
+                id = window.todos.array[i].id;
+            //TODO
+        }
     }
 };
 
@@ -391,9 +406,23 @@ function getTodoItems() {
         method: "GET"
     })
     .done(function(data) {
-        console.log(data);
         data.forEach(function (el) {
             window.todos.add(el.id, el.title, el.text, el.priority, el.duedate, el.done);
         });
+        var sort = Cookies.getJSON('sorting');
+        if (sort !== undefined) {
+            document.getElementById("sort_type").value = sort.by;
+            document.getElementById("sort_order").value = sort.order;
+            sortTodos();
+        }
     })
+}
+
+function formatDate(date) {
+    return date.getFullYear() + "-" +
+           ("0" + (date.getMonth()+1)).slice(-2) + "-" +
+           ("0" + date.getDate()).slice(-2) + " " +
+           ("0" + date.getHours()).slice(-2) + ":" +
+           ("0" + date.getMinutes()).slice(-2) + ":" +
+           ("0" + date.getSeconds()).slice(-2);
 }

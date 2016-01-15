@@ -3,6 +3,7 @@
 	<head>
 		<title>Your lists! - MijnGroenteman</title>
         <script type="text/javascript" src="lib/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="lib/js.cookie.js"></script>
         <script type="text/javascript" src="js/lists.js"></script>
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
         <link rel="stylesheet" href="css/style.css"/>
@@ -10,13 +11,14 @@
 	</head>
 	<body>
     <header class="mainHeader">
+        <div class="fontSizeContainer noselect">
+            <label id="fontMinus" class="noselect" data-val="-1">-</label>
+            <label id="fontPlus" class="noselect" data-val="1">+</label>
+        </div>
 			<h1>Your todo lists</h1>
 			<a href="index.html"><button class="button red" id="logoutBtn">Logout</button></a>
 		</header>
 		<div class="contentLists">
-            <!--<div class="settingsBar">
-                Main settings and lbadklfjasf
-            </div>-->
 			<div class="popupBg" style="display: none;">
                 <div class="popupContent" id="addListPopup" style="display: none;">
                     <form id="addListForm">
@@ -27,29 +29,12 @@
                     </form>
                 </div>
             </div>
-            <!--<div class="listsTab hidden">
-                <i class="material-icons" id="addList">add_circle</i>
-                <ul class="lists" id="lists">
-                    <li class="listItem active">
-                        <i class="material-icons deleteListBtn">delete</i>
-                        <span class="listName">Groceries</span>
-                    </li>
-                    <li class="listItem">
-                        <i class="material-icons deleteListBtn">delete</i>
-                        <span class="listName">Dank Maymays</span>
-                    </li>
-                    <li class="listItem">
-                        <i class="material-icons deleteListBtn">delete</i>
-                        <span class="listName">And his name is</span>
-                    </li>
-                </ul>
-            </div>-->
             <div class="list">
                 <div class="listSorting">
                     <span>Sort by:</span>
                     <select id="sort_type">
                         <option>Priority</option>
-                        <option>FUTURE SORTS HERE</option>
+                        <option>Duedate</option>
                     </select>
                     <select id="sort_order">
                         <option>Ascending</option>

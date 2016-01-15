@@ -1,0 +1,34 @@
+{
+  "name": "WebNData-todolist",
+  "version": "1.0.0",
+  "description": "ToDo webpage for the Web and Database technology course on the TU Delft",
+  "main": "index.js",
+  "dependencies": {
+    "bignumber.js": "^2.1.4",
+    "core-util-is": "^1.0.2",
+    "ejs": "^1.0.0",
+    "inherits": "^2.0.1",
+    "isarray": "^0.0.1",
+    "mysql": "^2.9.0",
+    "readable-stream": "^1.1.13",
+    "string_decoder": "^0.10.31"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fastjur/WebNData-todolist.git"
+  },
+  "keywords": [
+    "ToDo",
+    "TU",
+    "Delft"
+  ],
+  "author": "Jurriaan den Toonder and Douwe Koopmans",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Fastjur/WebNData-todolist/issues"
+  }
+}

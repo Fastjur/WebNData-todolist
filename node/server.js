@@ -20,6 +20,9 @@ app.use(express.static(__dirname + "/../"));
 http.createServer(app).listen(3030);
 console.log("Listening on port 3030");
 
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
 app.get("/a+l+t+o+d+o+s+", function (req, res) {
     console.log("Received /alltodos");
     db.getAllTodos(res);

@@ -20,7 +20,8 @@ var getAllTodos = function(res) {
                 };
                 todos.push(todo);
             }
-            res.json(todos);
+            res.render('todos', {todo_array: todos});
+            //res.json(todos);
         } else {
             console.log("alltodos query error", err);
         }

@@ -25,7 +25,7 @@ app.get("/a+l+t+o+d+o+s+", function (req, res) {
     db.getAllTodos(res);
 });
 
-app.get("/a+d+t+o+d+o+", function(req, res) {
+app.get("/a+d+d+t+o+d+o+", function(req, res) {
     console.log("Received /addtodo");
     db.addTodo(req, res);
 });
